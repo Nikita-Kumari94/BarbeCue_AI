@@ -1,4 +1,4 @@
-# 🍛 BarbeCue.AI
+# 🍛 BarbeCue AI
 
 An intelligent platform for restaurants that combines **machine learning** with **social impact**.  
 It predicts the quantity of each menu item likely to be ordered on a given weekday based on past data, and also enables **leftover food donation** to NGOs and orphanages.
