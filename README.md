@@ -29,7 +29,6 @@ It predicts the quantity of each menu item likely to be ordered on a given weekd
 |-----------|-------------------|
 | Frontend  | HTML, CSS, JavaScript, React      |
 | Backend   | Flask, Pandas, joblib, NodeJs, ExpressJs     |
-| ML Model  | Scikit-learn, joblib, panda, scipy, Pickle, jinja |
 | Database | MySQL via XAMPP, JSON storage   |
 
 ---
