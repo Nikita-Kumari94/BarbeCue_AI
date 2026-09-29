@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import { useNavigate } from 'react-router-dom';
 import { Link,NavLink } from "react-router-dom";
 import Chat from '../Chat/Chat.jsx';
+import logo from '../../assets/bb4.png';
 
 
 function Header(){
@@ -24,25 +25,16 @@ function Header(){
     const handleLogout = () => {
         localStorage.removeItem("isLoggedIn");
         localStorage.removeItem("userType");
+        localStorage.removeItem("token");
         setIsLoggedIn(false);
         navigate('/');
     };
-    useEffect(() => {
-    if (localStorage.getItem("isLoggedIn") !== "true") {
-        navigate("/");
-    }
-    }, []);
-
-    const handleStart = () => {
-    window.location.href = 'http://localhost:5000/predict';
-    };
-
 
     return(
         <>
             <nav className="sticky top-0 z-50 flex items-center justify-between bg-slate-100 p-6 rounded-xl shadow-md">
             <div className="flex flex-row text-2xl font-bold text-gray-800 ml-4">
-                <img className="w-12 h-auto" src="src\assets\bb4.png" alt="" />
+                <img className="w-12 h-auto" src={logo} alt="BarbeCue AI" />
                 <NavLink to="/">BarbeCueAI</NavLink>
             </div>
 
@@ -98,10 +90,8 @@ function Header(){
                 )}
                 
                 <NavLink
-                // to="http://localhost:5000/predict"
-                to="http://127.0.0.1:5000/"
+                to={isLoggedIn ? (localStorage.getItem('userType') === 'ngo' ? '/ngo-dashboard' : '/restaurant-dashboard') : '/login'}
                 className="bg-yellow-800 text-white font-bold py-2 px-4 rounded-2xl hover:bg-yellow-700 transition"
-                // onClick={handleStart}
                 >
                 Get Started
                 </NavLink>

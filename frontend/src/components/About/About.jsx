@@ -1,5 +1,6 @@
 import React from "react";
 import Typewriter from '../Typewriter.jsx';
+import logoImage from '../../assets/bb4.png';
 
 function About(){
     const slogans = [
@@ -22,7 +23,7 @@ function About(){
                 />
             </div>
             <div className="opacity-5 absolute z-40 right-10 top-40">
-            <img className='w-48 mt-40' src="src\assets\bb4.png" alt="Logo" /> 
+            <img className='w-48 mt-40' src={logoImage} alt="Logo" />
             </div>
             
                 <div className='flex flex-row w-full bg-transparent text-black justify-start items-end pl-28 pt-20 pb-0 mb-0 mt-4'>

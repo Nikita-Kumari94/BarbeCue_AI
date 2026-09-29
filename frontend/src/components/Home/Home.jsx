@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Typewriter from '../Typewriter.jsx';
 import { NavLink } from 'react-router-dom';
+import heroImage from '../../assets/bb9.jpg';
+import logoImage from '../../assets/bb4.png';
+
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 function Home() {
     const fullText = 'BarbeCue AI.';
@@ -38,7 +42,7 @@ function Home() {
         setError('');
         setLoading(true);
         try {
-        const response = await fetch(`http://localhost:5000/api/restaurants?zip_code=${searchQuery.trim()}`);
+        const response = await fetch(`${apiUrl}/restaurants?zip_code=${searchQuery.trim()}`);
         if (!response.ok) throw new Error('Network response not ok');
         const data = await response.json();
         setSearchResults(data.length ? data : []);
@@ -84,12 +88,12 @@ function Home() {
     return (
         <>
             <div className='absolute z-0 w-full h-auto object-cover object-left'>
-                <img src="src/assets/bb9.jpg" alt="bg-hero-section" />
+                <img src={heroImage} alt="bg-hero-section" />
             </div>
 
             <div className='relative'>
                 <div className="flex justify-center items-center p-0 m-0 gap-0 opacity-20">
-                    <img className='w-48 mt-72' src="src/assets/bb4.png" alt="Logo" />
+                    <img className='w-48 mt-72' src={logoImage} alt="Logo" />
                 </div>
 
                 <div className="flex justify-center text-6xl items-center pl-40 pr-40 pt-0 pb-2 mt-1 mb-2">

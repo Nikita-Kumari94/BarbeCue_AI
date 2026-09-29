@@ -1,0 +1,40 @@
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: barbecue
+      MYSQL_USER: barbecue
+      MYSQL_PASSWORD: change-me
+      MYSQL_ROOT_PASSWORD: local-root-password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  ml:
+    build: ./ml
+    volumes: ["ml_models:/app/models"]
+  api:
+    build: ./backend
+    environment:
+      PORT: 5000
+      DB_HOST: db
+      DB_USER: barbecue
+      DB_PASS: change-me
+      DB_NAME: barbecue
+      JWT_SECRET: replace-this-before-production
+      ML_SERVICE_URL: http://ml:8000
+      CORS_ORIGIN: http://localhost:8080
+    depends_on:
+      db: { condition: service_healthy }
+      ml: { condition: service_started }
+  web:
+    build: ./frontend
+    ports: ["8080:80"]
+    depends_on: [api]
+volumes:
+  mysql_data:
+  ml_models:

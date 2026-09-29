@@ -10,6 +10,7 @@ import Contact from './components/Contact/Contact.jsx'
 import Login from './components/Login/Login.jsx'
 import NgoDashboard from './components/NgoDashboard/NgoDashboard.jsx'
 import RestaurantDashboard from './components/RestaurantDashboard/RestaurantDashboard.jsx'
+import RequireAuth from './components/RequireAuth.jsx'
 
 // const router = createBrowserRouter([
 //   {
@@ -39,8 +40,8 @@ const router = createBrowserRouter(
       <Route path='about' element={<About/>}/>
       <Route path='contact' element={<Contact/>}/>
       <Route path='login' element={<Login/>}/>
-      <Route path='ngo-dashboard' element={<NgoDashboard/>}/>
-      <Route path='restaurant-dashboard' element={<RestaurantDashboard/>}/>
+      <Route path='ngo-dashboard' element={<RequireAuth role="ngo"><NgoDashboard/></RequireAuth>}/>
+      <Route path='restaurant-dashboard' element={<RequireAuth role="restaurant"><RestaurantDashboard/></RequireAuth>}/>
     </Route>
   )
 )

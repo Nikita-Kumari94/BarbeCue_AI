@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import socialImage from '../../assets/bb3.png';
 
 function Footer(){
     return (
@@ -27,7 +28,7 @@ function Footer(){
             </div>
             <div className="flex flex-col gap-3">
                 <h4 className="font-semibold mb-2 ml-8">Connect</h4>
-                <img className="w-full m-0" src="src\assets\bb3.png" alt="socials" />
+                <img className="w-full m-0" src={socialImage} alt="socials" />
             </div>
             </div>
             <div className="text-center text-sm mt-2 text-slate-400 mb-0 pb-0">&copy; {new Date().getFullYear()}

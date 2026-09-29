@@ -1,38 +1,20 @@
-import React, { useEffect, useState } from "react";
-import bg1 from '../../assets/bg1.jpg';
+import { useEffect, useState } from 'react';
+import { api } from '../../api';
 
-function RestaurantDashboard() {
-  const [ngoList, setNgoList] = useState([]);
-
-  useEffect(() => {
-    // TODO: Fetch NGO requests from backend
-    setNgoList([
-      { id: 1, name: "Hope Orphanage", location: "JanakPuri, New Delhi-56"},
-      { id: 2, name: "Care NGO", location: "Najafgarh, New Delhi-32"},
-      { id: 3, name: "Umang NGO", location: "Mongolpuri, New Delhi-88"},
-      { id: 4, name: "Ek Prayaas Trust", location: "JanakPuri, New Delhi-49"},
-    ]);
-  }, []);
-
-  return (
-    <div className="min-h-screen p-12 bg-cover bg-center"
-        style={{ backgroundImage: `url(${bg1})` }}
-    >
-      <h2 className="text-3xl font-bold text-yellow-900 text-center mb-10">NGO Requests</h2>
-      <div className="grid gap-4 max-w-3xl mx-auto">
-        {ngoList.map((ngo) => (
-          <div key={ngo.id} className="bg-white p-10 rounded-md shadow-md flex flex-row justify-between">
-            <div>
-            <h3 className="text-xl font-semibold text-yellow-800">{ngo.name}</h3>
-            <p className="text-sm text-gray-700">Location: {ngo.location}</p></div>
-            <button className="mt-3 bg-yellow-700 text-white py-1 px-4 rounded hover:bg-yellow-800">
-              Contact NGO
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+export default function RestaurantDashboard() {
+  const [csvFile, setCsvFile] = useState(null), [targetDate, setTargetDate] = useState(tomorrow), [forecast, setForecast] = useState(null), [requests, setRequests] = useState([]), [message, setMessage] = useState('');
+  const [donation, setDonation] = useState({ food_name: '', quantity: '', unit: 'servings', expires_at: '', pickup_address: '' });
+  const loadRequests = () => api('/requests').then(setRequests).catch((error) => setMessage(error.message));
+  useEffect(() => { loadRequests(); }, []);
+  const train = async () => { if (!csvFile) return setMessage('Choose a sales CSV first.'); try { const result = await api('/sales/train', { method: 'POST', body: JSON.stringify({ csv: await csvFile.text() }) }); setMessage(`Model trained on ${result.rows_used} records. Validation MAE: ${result.validation_mae}.`); } catch (error) { setMessage(error.message); } };
+  const predict = async () => { try { setForecast(await api('/predictions', { method: 'POST', body: JSON.stringify({ target_date: targetDate }) })); } catch (error) { setMessage(error.message); } };
+  const createDonation = async (event) => { event.preventDefault(); try { await api('/donations', { method: 'POST', body: JSON.stringify(donation) }); setMessage('Donation published.'); setDonation({ food_name: '', quantity: '', unit: 'servings', expires_at: '', pickup_address: '' }); } catch (error) { setMessage(error.message); } };
+  const decide = async (id, status) => { try { await api(`/requests/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) }); loadRequests(); } catch (error) { setMessage(error.message); } };
+  const field = (key) => ({ value: donation[key], onChange: (event) => setDonation({ ...donation, [key]: event.target.value }), required: true });
+  return <main className="min-h-screen bg-amber-50 p-6 md:p-12"><div className="mx-auto max-w-5xl space-y-8"><h1 className="text-3xl font-bold text-yellow-900">Restaurant dashboard</h1>{message && <p className="rounded bg-white p-3 text-yellow-900">{message}</p>}
+    <section className="rounded-xl bg-white p-6 shadow"><h2 className="text-xl font-bold">Demand forecast</h2><p className="mb-4 text-sm text-gray-600">Upload CSV with date, item_name and quantity.</p><div className="flex flex-wrap gap-3"><input type="file" accept=".csv,text/csv" onChange={(event) => setCsvFile(event.target.files[0])}/><button onClick={train} className="rounded bg-yellow-800 px-4 py-2 text-white">Train model</button><input type="date" value={targetDate} onChange={(event) => setTargetDate(event.target.value)} /><button onClick={predict} className="rounded bg-green-700 px-4 py-2 text-white">Forecast</button></div>{forecast && <><p className="mt-4 text-sm">Trained through {forecast.trained_through}; validation MAE {forecast.validation_mae} servings.</p><div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">{forecast.predictions.map((row) => <div key={row.item_name} className="rounded bg-amber-100 p-3"><b>{row.item_name}</b><br/>{row.predicted_quantity} servings</div>)}</div></>}</section>
+    <section className="rounded-xl bg-white p-6 shadow"><h2 className="mb-4 text-xl font-bold">Publish leftover food</h2><form onSubmit={createDonation} className="grid gap-3 md:grid-cols-2"><input placeholder="Food name" {...field('food_name')} /><input type="number" min="1" placeholder="Quantity" {...field('quantity')} /><input placeholder="Unit" {...field('unit')} /><input type="datetime-local" {...field('expires_at')} /><input className="md:col-span-2" placeholder="Pickup address" {...field('pickup_address')} /><button className="w-fit rounded bg-yellow-800 px-4 py-2 text-white">Publish donation</button></form></section>
+    <section className="rounded-xl bg-white p-6 shadow"><h2 className="mb-4 text-xl font-bold">NGO requests</h2>{requests.length ? requests.map((row) => <div className="mb-3 rounded border p-3" key={row.id}><b>{row.ngo_name}</b> requests {row.quantity} {row.unit} of {row.food_name}. <span className="text-gray-600">{row.status}</span>{row.status === 'pending' && <div className="mt-2 space-x-2"><button onClick={() => decide(row.id, 'accepted')} className="rounded bg-green-700 px-3 py-1 text-white">Accept</button><button onClick={() => decide(row.id, 'rejected')} className="rounded bg-red-700 px-3 py-1 text-white">Reject</button></div>}</div>) : <p>No requests yet.</p>}</section>
+  </div></main>;
 }
-
-export default RestaurantDashboard;

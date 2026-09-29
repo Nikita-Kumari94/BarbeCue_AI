@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import chatIcon from "../../assets/bb1.png";
+import closeIcon from "../../assets/cross.png";
 
 function Chat() {
   const [open, setOpen] = useState(false);
@@ -37,7 +38,7 @@ function Chat() {
         {/* Header */}
         <div className="bg-yellow-800 text-white px-4 py-3 rounded-t-lg flex flex-row justify-between">
           <h2 className="text-lg font-semibold">Chat with Us</h2>
-          <img className="w-6 h-6 cursor-pointer rounded-sm m-1 p-1 hover:bg-orange-700" onClick={() => setOpen((open)=>(!open))} src="src/assets/cross.png" alt="" />
+          <img className="w-6 h-6 cursor-pointer rounded-sm m-1 p-1 hover:bg-orange-700" onClick={() => setOpen((open)=>(!open))} src={closeIcon} alt="Close chat" />
         </div>
 
         {/* Messages */}

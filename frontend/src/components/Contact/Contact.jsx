@@ -1,4 +1,5 @@
 import React from "react";
+import contactImage from '../../assets/bb2.png';
 
 function Contact(){
     return(
@@ -15,7 +16,7 @@ function Contact(){
                     </form>
                 </div>
                 <div>
-                    <img className="w-1/2" src="src\assets\bb2.png" alt="Chat_icon" />
+                    <img className="w-1/2" src={contactImage} alt="Chat_icon" />
                 </div>
             </div>
             <nav className='flex flex-wrap gap-32 bg-slate-100 p-1 w-full h-7'></nav>

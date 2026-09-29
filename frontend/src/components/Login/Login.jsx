@@ -6,6 +6,8 @@ import loginImage from '../../assets/bb6.jpg';
 import signupImage from '../../assets/bb5.jpg';
 import selImage from '../../assets/bb10.jpeg';
 
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 function Login() {
   const [userType, setUserType] = useState(null);
   const [isSignup, setIsSignup] = useState(false);
@@ -30,12 +32,13 @@ function Login() {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/login', {
+      const res = await axios.post(`${apiUrl}/login`, {
         ...loginData,
         user_type: userType,
       });
 
       if (res.data.success) {
+        localStorage.setItem("token", res.data.token);
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("userType", userType);
         window.dispatchEvent(new Event("storage"));
@@ -55,7 +58,7 @@ function Login() {
     const registeredAtValue = signupData.registered_at || new Date().toISOString();
 
     try {
-      const res = await axios.post('http://localhost:5000/api/register', {
+      const res = await axios.post(`${apiUrl}/register`, {
         username: signupData.username,
         org_name: signupData.org_name,
         license_number: signupData.license_number,
@@ -68,8 +71,8 @@ function Login() {
       });
 
       if (res.data.success === true) {
-        // navigate("/login");
         setIsSignup(false);
+        setError("Account created. NGO accounts must be verified before requesting food.");
       } else {
         setError(res.data.message || JSON.stringify(res.data) || "Signup error");
       }

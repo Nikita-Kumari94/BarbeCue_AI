@@ -36,6 +36,12 @@ exports.register = async (req, res) => {
   }
 
   try {
+    const registrationDate = new Date(registered_at);
+    if (Number.isNaN(registrationDate.getTime())) {
+      return res.status(400).json({ success: false, message: 'registered_at must be a valid date.' });
+    }
+    // MySQL DATETIME has no timezone suffix or milliseconds.
+    const registeredAtForDb = registrationDate.toISOString().slice(0, 19).replace('T', ' ');
     const existingUser = await findUserByEmail(email);
     if (existingUser) {
       return res.status(409).json({ success: false, message: "User already exists." });
@@ -50,7 +56,7 @@ exports.register = async (req, res) => {
       user_type,
       email,
       phone,
-      registered_at,
+      registered_at: registeredAtForDb,
       location
     });
 
